@@ -1,11 +1,13 @@
-package main
+package user
 
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+
+	"shop/pkg/session"
 
 	"github.com/99designs/gqlgen/graphql"
 )
@@ -15,7 +17,7 @@ type Response map[string]interface{}
 func NewUserHandler() *UserHandler {
 	return &UserHandler{
 		St: NewUserStorage(),
-		Sm: NewSessionStorage(),
+		Sm: session.NewSessionStorage(),
 	}
 }
 
@@ -44,7 +46,7 @@ type SessionManager interface {
 func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Println("error with read r.body", r.URL.Path, err)
+		log.Printf("read body error: [%s], path: [%s]\n", err.Error(), r.URL.Path)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -52,7 +54,7 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 	dataFromBody := make(map[string]*User)
 	err = json.Unmarshal(body, &dataFromBody)
 	if err != nil {
-		fmt.Println("error with unmarshal json from r.body", r.URL.Path, err)
+		log.Printf("unmarshal body error: [%s], path: [%s]\n", err.Error(), r.URL.Path)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -65,14 +67,14 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 	newUserID, err := uh.St.Add(newUser)
 	if err != nil {
-		fmt.Println("error with add new user to storage", r.URL.Path, err)
+		log.Printf("add user error: [%s], path: [%s]\n", err.Error(), r.URL.Path)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	sessionToken, err := uh.Sm.CreateSessionToken(newUserID)
 	if err != nil {
-		fmt.Println("error with getting session token for new user", r.URL.Path, err)
+		log.Printf("create session error: [%s], path: [%s]\n", err.Error(), r.URL.Path)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -85,7 +87,7 @@ func (uh *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 	dataResponse, err := json.Marshal(response)
 	if err != nil {
-		fmt.Println("error with marshal data response", r.URL.Path, err)
+		log.Printf("marshal response error: [%s], path: [%s]\n", err.Error(), r.URL.Path)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

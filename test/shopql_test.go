@@ -10,11 +10,14 @@ import (
 	"math/rand"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"reflect"
 	"regexp"
 	"strings"
 	"testing"
 	"time"
+
+	"shop/pkg/server"
 
 	"github.com/mcuadros/go-lookup"
 	"gopkg.in/d4l3k/messagediff.v1"
@@ -60,16 +63,21 @@ func JSONString(in interface{}) string {
 
 func TestApp(t *testing.T) {
 	rand.Seed(time.Now().UnixNano())
+	os.Chdir("..")
 
 	var (
-		app = GetApp()
-		ts  = httptest.NewServer(app)
+		app, err = server.GetApp()
+		ts       = httptest.NewServer(app)
 
 		gqlURL = "/query"
 
 		username = "golang"
 		password = "love"
 	)
+
+	if err != nil {
+		t.Fatalf("get app error: [%s]", err.Error())
+	}
 
 	tplParams := map[string]string{
 		"EMAIL":    username + "@example.com",
@@ -508,7 +516,7 @@ func TestApp(t *testing.T) {
 			{
 				"errors": [
 				  {
-					"message": "User not authorized",
+					"message": "user not authorized",
 					"path": [
 					  "Catalog",
 					  "items",
@@ -542,7 +550,7 @@ func TestApp(t *testing.T) {
 			{
 				"errors": [
 				  {
-					"message": "User not authorized",
+					"message": "user not authorized",
 					"path": [
 					  "AddToCart"
 					]
@@ -564,7 +572,6 @@ func TestApp(t *testing.T) {
 				if err != nil {
 					return err
 				}
-				fmt.Println("-------------------- TOKEN:", val)
 				tplParams["token1"] = val.String()
 				return nil
 			},

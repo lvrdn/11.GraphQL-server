@@ -1,9 +1,9 @@
-all:
-	go run .
+run:
+	go run ./cmd/main.go
 
 .PHONY: test
 test:
-	go test -v
+	go test ./test -v
 
 .PHONY: install
 install:
@@ -16,4 +16,4 @@ init:
 .PHONY: gen
 gen: 
 	@echo "-- generatiog graphql files"
-	go run github.com/99designs/gqlgen generate --verbose --config ./gqlgen.yml
+	go run github.com/99designs/gqlgen generate --verbose --config api/gqlgen.yml

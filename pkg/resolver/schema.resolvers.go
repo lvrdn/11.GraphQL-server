@@ -1,4 +1,4 @@
-package main
+package resolver
 
 // This file will be automatically regenerated based on the schema, any resolver implementations
 // will be copied through when generating and any unknown code will be moved to the end.
@@ -7,11 +7,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"shop/pkg/generated"
 	"strconv"
 )
 
 // Parent is the resolver for the parent field.
-func (r *catalogResolver) Parent(ctx context.Context, obj *Catalog) (*Catalog, error) {
+func (r *catalogResolver) Parent(ctx context.Context, obj *generated.Catalog) (*generated.Catalog, error) {
 	if obj.Parent == nil {
 		return nil, fmt.Errorf("this catalog dont have parent catalog")
 	}
@@ -24,7 +25,7 @@ func (r *catalogResolver) Parent(ctx context.Context, obj *Catalog) (*Catalog, e
 }
 
 // Childs is the resolver for the childs field.
-func (r *catalogResolver) Childs(ctx context.Context, obj *Catalog) ([]*Catalog, error) {
+func (r *catalogResolver) Childs(ctx context.Context, obj *generated.Catalog) ([]*generated.Catalog, error) {
 	if obj.Childs == nil {
 		return nil, fmt.Errorf("this catalog dont have childs catalog")
 	}
@@ -38,8 +39,7 @@ func (r *catalogResolver) Childs(ctx context.Context, obj *Catalog) ([]*Catalog,
 }
 
 // Items is the resolver for the items field.
-func (r *catalogResolver) Items(ctx context.Context, obj *Catalog, limit *int, offset *int) ([]*Item, error) {
-
+func (r *catalogResolver) Items(ctx context.Context, obj *generated.Catalog, limit *int, offset *int) ([]*generated.Item, error) {
 	if obj.Items == nil {
 		return nil, fmt.Errorf("this catalog dont have items")
 	}
@@ -59,11 +59,12 @@ func (r *catalogResolver) Items(ctx context.Context, obj *Catalog, limit *int, o
 			return nil, err
 		}
 	}
+
 	return obj.Items, nil
 }
 
 // Parent is the resolver for the parent field.
-func (r *itemResolver) Parent(ctx context.Context, obj *Item) (*Catalog, error) {
+func (r *itemResolver) Parent(ctx context.Context, obj *generated.Item) (*generated.Catalog, error) {
 	if obj.Parent == nil {
 		return nil, fmt.Errorf("this item dont have parent catalog")
 	}
@@ -76,7 +77,7 @@ func (r *itemResolver) Parent(ctx context.Context, obj *Item) (*Catalog, error) 
 }
 
 // Seller is the resolver for the seller field.
-func (r *itemResolver) Seller(ctx context.Context, obj *Item) (*Seller, error) {
+func (r *itemResolver) Seller(ctx context.Context, obj *generated.Item) (*generated.Seller, error) {
 	err := r.StorageData.FillSellerFieldsWithData(obj.Seller)
 	if err != nil {
 		return nil, err
@@ -86,7 +87,7 @@ func (r *itemResolver) Seller(ctx context.Context, obj *Item) (*Seller, error) {
 }
 
 // InCart is the resolver for the inCart field.
-func (r *itemResolver) InCart(ctx context.Context, obj *Item) (int, error) {
+func (r *itemResolver) InCart(ctx context.Context, obj *generated.Item) (int, error) {
 	userID, err := r.UserIdFromCtx(ctx)
 	if err != nil {
 		return 0, err
@@ -101,7 +102,7 @@ func (r *itemResolver) InCart(ctx context.Context, obj *Item) (int, error) {
 }
 
 // AddToCart is the resolver for the AddToCart field.
-func (r *mutationResolver) AddToCart(ctx context.Context, in *CartInput) ([]*CartItem, error) {
+func (r *mutationResolver) AddToCart(ctx context.Context, in *generated.CartInput) ([]*generated.CartItem, error) {
 	userID, err := r.UserIdFromCtx(ctx)
 	if err != nil {
 		return nil, err
@@ -119,7 +120,7 @@ func (r *mutationResolver) AddToCart(ctx context.Context, in *CartInput) ([]*Car
 }
 
 // RemoveFromCart is the resolver for the RemoveFromCart field.
-func (r *mutationResolver) RemoveFromCart(ctx context.Context, in CartInput) ([]*CartItem, error) {
+func (r *mutationResolver) RemoveFromCart(ctx context.Context, in generated.CartInput) ([]*generated.CartItem, error) {
 	userID, err := r.UserIdFromCtx(ctx)
 	if err != nil {
 		return nil, err
@@ -137,12 +138,12 @@ func (r *mutationResolver) RemoveFromCart(ctx context.Context, in CartInput) ([]
 }
 
 // Catalog is the resolver for the Catalog field.
-func (r *queryResolver) Catalog(ctx context.Context, id *string) (*Catalog, error) {
+func (r *queryResolver) Catalog(ctx context.Context, id *string) (*generated.Catalog, error) {
 	idINT, err := strconv.Atoi(*id)
 	if err != nil {
 		return nil, fmt.Errorf("id must be number")
 	}
-	catalog := &Catalog{ID: &idINT}
+	catalog := &generated.Catalog{ID: &idINT}
 	err = r.StorageData.FillCatalogFieldsWithData(catalog)
 	if err != nil {
 		return nil, err
@@ -151,12 +152,12 @@ func (r *queryResolver) Catalog(ctx context.Context, id *string) (*Catalog, erro
 }
 
 // Seller is the resolver for the Seller field.
-func (r *queryResolver) Seller(ctx context.Context, id *string) (*Seller, error) {
+func (r *queryResolver) Seller(ctx context.Context, id *string) (*generated.Seller, error) {
 	idINT, err := strconv.Atoi(*id)
 	if err != nil {
 		return nil, fmt.Errorf("id must be number")
 	}
-	seller := &Seller{ID: &idINT}
+	seller := &generated.Seller{ID: &idINT}
 	err = r.StorageData.FillSellerFieldsWithData(seller)
 	if err != nil {
 		return nil, err
@@ -165,7 +166,7 @@ func (r *queryResolver) Seller(ctx context.Context, id *string) (*Seller, error)
 }
 
 // MyCart is the resolver for the MyCart field.
-func (r *queryResolver) MyCart(ctx context.Context) ([]*CartItem, error) {
+func (r *queryResolver) MyCart(ctx context.Context) ([]*generated.CartItem, error) {
 	userID, err := r.UserIdFromCtx(ctx)
 	if err != nil {
 		return nil, err
@@ -180,8 +181,7 @@ func (r *queryResolver) MyCart(ctx context.Context) ([]*CartItem, error) {
 }
 
 // Items is the resolver for the items field.
-func (r *sellerResolver) Items(ctx context.Context, obj *Seller, limit *int, offset *int) ([]*Item, error) {
-
+func (r *sellerResolver) Items(ctx context.Context, obj *generated.Seller, limit *int, offset *int) ([]*generated.Item, error) {
 	if obj.Items == nil {
 		return nil, fmt.Errorf("this seller dont have items")
 	}
@@ -204,20 +204,20 @@ func (r *sellerResolver) Items(ctx context.Context, obj *Seller, limit *int, off
 	return obj.Items, nil
 }
 
-// Catalog returns CatalogResolver implementation.
-func (r *Resolver) Catalog() CatalogResolver { return &catalogResolver{r} }
+// Catalog returns generated.CatalogResolver implementation.
+func (r *Resolver) Catalog() generated.CatalogResolver { return &catalogResolver{r} }
 
-// Item returns ItemResolver implementation.
-func (r *Resolver) Item() ItemResolver { return &itemResolver{r} }
+// Item returns generated.ItemResolver implementation.
+func (r *Resolver) Item() generated.ItemResolver { return &itemResolver{r} }
 
-// Mutation returns MutationResolver implementation.
-func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
+// Mutation returns generated.MutationResolver implementation.
+func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
-// Query returns QueryResolver implementation.
-func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+// Query returns generated.QueryResolver implementation.
+func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
-// Seller returns SellerResolver implementation.
-func (r *Resolver) Seller() SellerResolver { return &sellerResolver{r} }
+// Seller returns generated.SellerResolver implementation.
+func (r *Resolver) Seller() generated.SellerResolver { return &sellerResolver{r} }
 
 type catalogResolver struct{ *Resolver }
 type itemResolver struct{ *Resolver }
